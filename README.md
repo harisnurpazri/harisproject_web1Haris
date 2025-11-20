@@ -26,6 +26,20 @@ Kunjungi website melalui link berikut:
 
 ---
 
+## 🔑 Akun Percobaan (Demo Login)
+
+Gunakan akun berikut untuk mencoba fitur aplikasi **Meubeul Dua Putra** tanpa harus membuat akun baru.
+
+### 🛠️ Akun Admin
+- **Username** : admin@meubeul.com  
+- **Password** : Admin123
+
+### 👤 Akun User
+- **Username** : barcode@gmail.com
+- **Password** : barcode
+
+---
+
 ## ✨ Deskripsi Singkat
 
 **Meubeul Dua Putra** adalah website e-commerce sederhana yang dibuat untuk menampilkan dan menjual produk meubeul/furniture secara online.  
