@@ -47,12 +47,12 @@ CREATE TABLE IF NOT EXISTS chat_messages (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     INDEX(user_id),
     INDEX(created_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4; 
 
 
 INSERT INTO users (nama,email,password,role) VALUES
 ('Admin Haris','admin@meubeul.test','Admin123','admin'),
-('User Budi','user@meubeul.test','User1','user');
+('User Budi','user@meubeul.test','user1','user');
 
 INSERT INTO produk (nama_produk,deskripsi,harga,stok,gambar,kategori) VALUES
 ('Kursi Kayu Jati Classic','Kursi jati solid finishing natural. Cocok ruang tamu.',1200000,10,'kursi1.jpg','Kursi'),

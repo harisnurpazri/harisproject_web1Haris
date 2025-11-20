@@ -198,72 +198,364 @@ if (isset($_SESSION['alert'])) {
   </div>
 </div>
 
-<!-- Delete Confirmation Modal -->
-<div class="modal fade" id="deleteUserModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content" style="border-radius: 16px; border: none;">
-      <div class="modal-body text-center p-4">
-        <div class="mb-3">
-          <i class="fa-solid fa-exclamation-triangle fa-4x text-danger"></i>
+<!-- CUSTOM MODAL - Pure CSS & Vanilla JS (No Bootstrap Modal) -->
+<div id="customDeleteModal" style="display: none;">
+  <!-- Overlay -->
+  <div class="custom-modal-overlay"></div>
+  
+  <!-- Modal Dialog -->
+  <div class="custom-modal-dialog">
+    <div class="custom-modal-content">
+      <!-- Header -->
+      <div class="custom-modal-header">
+        <button class="custom-modal-close" onclick="closeDeleteModal()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      
+      <!-- Body -->
+      <div class="custom-modal-body">
+        <div class="modal-icon-danger">
+          <i class="fa-solid fa-triangle-exclamation"></i>
         </div>
-        <h5 class="fw-bold mb-3">Konfirmasi Penghapusan</h5>
-        <p class="text-muted mb-2">Apakah Anda yakin ingin menghapus user:</p>
-        <p class="fw-bold mb-3" id="deleteUserName"></p>
-        <div class="alert alert-warning text-start" style="border-radius: 12px;">
-          <i class="fa-solid fa-info-circle me-2"></i>
-          <small>
-            <strong>Peringatan:</strong> Semua data terkait user ini akan ikut terhapus:
-            <ul class="mb-0 mt-2">
+        <h3>Konfirmasi Penghapusan</h3>
+        <p>Apakah Anda yakin ingin menghapus user:</p>
+        <p class="user-name-display" id="userNameDisplay"></p>
+        
+        <div class="warning-box">
+          <div class="warning-header">
+            <i class="fa-solid fa-exclamation-circle"></i>
+            <strong>PERINGATAN:</strong>
+          </div>
+          <div class="warning-content">
+            Semua data terkait user ini akan dihapus:
+            <ul>
               <li>Riwayat pesanan</li>
               <li>Riwayat chat</li>
             </ul>
-          </small>
+          </div>
         </div>
-        <p class="text-danger small mb-4">
-          <i class="fa-solid fa-warning me-1"></i>
-          Tindakan ini tidak dapat dibatalkan!
+        
+        <p class="danger-note">
+          <i class="fa-solid fa-ban"></i>
+          Tindakan ini TIDAK DAPAT dibatalkan!
         </p>
-        <div class="d-flex gap-2 justify-content-center">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-            <i class="fa-solid fa-times me-2"></i>Batal
-          </button>
-          <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
-            <i class="fa-solid fa-trash me-2"></i>Ya, Hapus
-          </button>
-        </div>
+      </div>
+      
+      <!-- Footer -->
+      <div class="custom-modal-footer">
+        <button class="btn-modal-cancel" onclick="closeDeleteModal()">
+          <i class="fa-solid fa-xmark me-2"></i>Batal
+        </button>
+        <button class="btn-modal-confirm" id="btnModalConfirm">
+          <i class="fa-solid fa-trash me-2"></i>Ya, Hapus
+        </button>
       </div>
     </div>
   </div>
 </div>
 
-<script>
-let deleteUserId = null;
+<style>
+/* Custom Modal Styles - Clean & Modern */
+.custom-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  z-index: 9998;
+  animation: fadeIn 0.2s ease;
+}
 
+.custom-modal-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  max-width: 500px;
+  width: 90%;
+  animation: slideDown 0.3s ease;
+}
+
+.custom-modal-content {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.custom-modal-header {
+  padding: 1.5rem;
+  text-align: right;
+  background: linear-gradient(135deg, #fee2e2, #fecaca);
+}
+
+.custom-modal-close {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: white;
+  color: #991b1b;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custom-modal-close:hover {
+  background: #991b1b;
+  color: white;
+  transform: rotate(90deg);
+}
+
+.custom-modal-body {
+  padding: 0 2rem 2rem;
+  text-align: center;
+}
+
+.modal-icon-danger {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 1.5rem;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  color: white;
+  box-shadow: 0 10px 30px rgba(239, 68, 68, 0.3);
+  animation: shake 0.5s ease;
+}
+
+.custom-modal-body h3 {
+  color: #1a1a1a;
+  font-size: 1.75rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+}
+
+.custom-modal-body > p {
+  color: #6b7280;
+  font-size: 1.05rem;
+  margin-bottom: 0.5rem;
+}
+
+.user-name-display {
+  color: #ef4444 !important;
+  font-weight: 700 !important;
+  font-size: 1.2rem !important;
+  margin-bottom: 1.5rem !important;
+}
+
+.warning-box {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border: 2px solid #fcd34d;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.warning-header {
+  color: #92400e;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.warning-content {
+  color: #78350f;
+  font-size: 0.95rem;
+}
+
+.warning-content ul {
+  margin: 0.5rem 0 0 1rem;
+  padding: 0;
+}
+
+.warning-content li {
+  margin-bottom: 0.25rem;
+}
+
+.danger-note {
+  color: #dc2626;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.custom-modal-footer {
+  padding: 1.5rem 2rem;
+  background: #f9fafb;
+  border-top: 2px solid #f3f4f6;
+  display: flex;
+  gap: 1rem;
+}
+
+.btn-modal-cancel,
+.btn-modal-confirm {
+  flex: 1;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-modal-cancel {
+  background: white;
+  color: #6b7280;
+  border: 2px solid #d1d5db;
+}
+
+.btn-modal-cancel:hover {
+  background: #f3f4f6;
+  color: #374151;
+  border-color: #9ca3af;
+  transform: translateY(-2px);
+}
+
+.btn-modal-confirm {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+}
+
+.btn-modal-confirm:hover {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5);
+}
+
+.btn-modal-confirm:disabled {
+  background: #d1d5db;
+  color: #9ca3af;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -60%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .custom-modal-dialog {
+    width: 95%;
+  }
+  
+  .custom-modal-body {
+    padding: 0 1.5rem 1.5rem;
+  }
+  
+  .modal-icon-danger {
+    width: 80px;
+    height: 80px;
+    font-size: 2.5rem;
+  }
+  
+  .custom-modal-body h3 {
+    font-size: 1.5rem;
+  }
+  
+  .custom-modal-footer {
+    flex-direction: column;
+  }
+}
+</style>
+
+<script>
+let deleteUserIdGlobal = null;
+
+// Show custom modal
 function confirmDeleteUser(id, name) {
-  deleteUserId = id;
-  document.getElementById('deleteUserName').textContent = '"' + name + '"';
+  deleteUserIdGlobal = id;
+  
+  // Set user name
+  document.getElementById('userNameDisplay').textContent = '"' + name + '"';
   
   // Show modal
-  const modal = new bootstrap.Modal(document.getElementById('deleteUserModal'));
-  modal.show();
+  document.getElementById('customDeleteModal').style.display = 'block';
+  document.body.style.overflow = 'hidden';
   
-  // Handle confirm button
-  document.getElementById('confirmDeleteBtn').onclick = function() {
-    // Show loading state
+  // Setup confirm button
+  const confirmBtn = document.getElementById('btnModalConfirm');
+  confirmBtn.onclick = function() {
+    // Show loading
     this.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Menghapus...';
     this.disabled = true;
     
-    // Redirect to delete
-    window.location.href = 'dashboard_admin.php?page=users&delete=' + deleteUserId + '&confirm=yes';
+    // Redirect after short delay
+    setTimeout(function() {
+      window.location.href = 'dashboard_admin.php?page=users&delete=' + deleteUserIdGlobal + '&confirm=yes';
+    }, 500);
   };
 }
 
-// Auto dismiss alerts after 5 seconds
+// Close modal
+function closeDeleteModal() {
+  document.getElementById('customDeleteModal').style.display = 'none';
+  document.body.style.overflow = '';
+  deleteUserIdGlobal = null;
+}
+
+// Close on ESC key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeDeleteModal();
+  }
+});
+
+// Close on overlay click
+document.addEventListener('click', function(e) {
+  if (e.target.classList.contains('custom-modal-overlay')) {
+    closeDeleteModal();
+  }
+});
+
+// Auto dismiss alerts
 document.addEventListener('DOMContentLoaded', function() {
-  const alerts = document.querySelectorAll('.alert');
+  const alerts = document.querySelectorAll('.alert-dismissible');
   alerts.forEach(function(alert) {
     setTimeout(function() {
-      const bsAlert = new bootstrap.Alert(alert);
+      const bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
       bsAlert.close();
     }, 5000);
   });
