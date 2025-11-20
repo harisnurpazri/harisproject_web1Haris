@@ -16,15 +16,13 @@
 
 ### ▶️ Video Demo YouTube  
 Klik untuk melihat demo penggunaan aplikasi:  
-**[Tonton di YouTube](https://youtube.com/your-link-here)**  
-> *Ganti link di atas dengan link video demo yang kamu upload.*
+**[Tonton di YouTube](https://youtube.com/your-link-here)** 
 
 ---
 
 ### 🌐 Website Meubeul Dua Putra  
 Kunjungi website melalui link berikut:  
-**[Buka Website](https://your-website-link.com)**  
-> *Ganti link di atas dengan link hosting website kamu (misalnya: Netlify, Vercel, atau hosting kampus).*
+**[Buka Website](https://your-website-link.com)**
 
 ---
 
