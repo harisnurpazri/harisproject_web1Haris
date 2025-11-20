@@ -1,7 +1,3 @@
-<!-- Banner / Header -->
-<p align="center">
-  <img src="./assets/banner.jpg" alt="Meubeul Dua Putra Banner" width="100%">
-</p>
 
 <h1 align="center">🛍️ Meubeul Dua Putra</h1>
 <h3 align="center">Website E-Commerce Furniture & Meubeul</h3>
