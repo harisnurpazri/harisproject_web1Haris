@@ -10,6 +10,24 @@
 
 ---
 
+---
+
+## 🔗 Link Demo & Publikasi
+
+### ▶️ Video Demo YouTube  
+Klik untuk melihat demo penggunaan aplikasi:  
+**[Tonton di YouTube](https://youtube.com/your-link-here)**  
+> *Ganti link di atas dengan link video demo yang kamu upload.*
+
+---
+
+### 🌐 Website Meubeul Dua Putra  
+Kunjungi website melalui link berikut:  
+**[Buka Website](https://your-website-link.com)**  
+> *Ganti link di atas dengan link hosting website kamu (misalnya: Netlify, Vercel, atau hosting kampus).*
+
+---
+
 ## ✨ Deskripsi Singkat
 
 **Meubeul Dua Putra** adalah website e-commerce sederhana yang dibuat untuk menampilkan dan menjual produk meubeul/furniture secara online.  
