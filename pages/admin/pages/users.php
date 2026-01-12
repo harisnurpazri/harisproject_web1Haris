@@ -6,48 +6,10 @@
 if (isset($_GET['delete']) && isset($_GET['confirm']) && $_GET['confirm'] === 'yes') {
   $userId = (int)$_GET['delete'];
   
-  // Validasi ID
-  if ($userId <= 0) {
-    $_SESSION['alert'] = [
-      'type' => 'danger',
-      'message' => 'ID tidak valid!'
-    ];
-  } elseif ($userId === $_SESSION['user_id']) {
-    $_SESSION['alert'] = [
-      'type' => 'danger',
-      'message' => 'Tidak dapat menghapus akun Anda sendiri!'
-    ];
-  } else {
-    // Check if user exists
-    $checkStmt = mysqli_prepare($koneksi, "SELECT id, nama FROM users WHERE id = ?");
-    mysqli_stmt_bind_param($checkStmt, "i", $userId);
-    mysqli_stmt_execute($checkStmt);
-    $checkResult = mysqli_stmt_get_result($checkStmt);
-    
-    if (mysqli_num_rows($checkResult) > 0) {
-      $userData = mysqli_fetch_assoc($checkResult);
-      
-      // Delete user's related data with error handling
-      try {
-        // Delete orders
-        mysqli_query($koneksi, "DELETE FROM orders WHERE user_id = $userId");
-        
-        // Delete cart (check if table exists)
-        $tableCheck = mysqli_query($koneksi, "SHOW TABLES LIKE 'cart'");
-        if (mysqli_num_rows($tableCheck) > 0) {
-          mysqli_query($koneksi, "DELETE FROM cart WHERE user_id = $userId");
-        }
-        
-        // Delete chat messages
-        mysqli_query($koneksi, "DELETE FROM chat_messages WHERE user_id = $userId");
-        
-        // Delete user
-        $deleteStmt = mysqli_prepare($koneksi, "DELETE FROM users WHERE id = ?");
-        mysqli_stmt_bind_param($deleteStmt, "i", $userId);
-        
-        if (mysqli_stmt_execute($deleteStmt)) {
-          $_SESSION['alert'] = [
-            'type' => 'success',
+  <?php
+  // Shim: forward to backend implementation
+  require_once __DIR__ . '/../../../backend/pages/admin/pages/users.php';
+  ?>
             'message' => 'User "' . htmlspecialchars($userData['nama']) . '" berhasil dihapus!'
           ];
         } else {

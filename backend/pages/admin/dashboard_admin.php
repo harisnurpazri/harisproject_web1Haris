@@ -9,12 +9,19 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 
 require '../../config/koneksi.php';
 
-// --- Function Helper ---
+// --- Function Helpers ---
 function fetchCount(mysqli $db, string $table, string $where = ''): int {
-    $query = "SELECT COUNT(*) AS c FROM {$table}";
-    if ($where) $query .= " WHERE {$where}";
-    $result = mysqli_query($db, $query);
-    return (int) mysqli_fetch_assoc($result)['c'];
+  $query = "SELECT COUNT(*) AS c FROM {$table}";
+  if ($where) $query .= " WHERE {$where}";
+  $result = mysqli_query($db, $query);
+  return (int) mysqli_fetch_assoc($result)['c'];
+}
+
+function column_exists(mysqli $db, string $table, string $column): bool {
+  $tableEsc = mysqli_real_escape_string($db, $table);
+  $colEsc = mysqli_real_escape_string($db, $column);
+  $res = mysqli_query($db, "SHOW COLUMNS FROM `{$tableEsc}` LIKE '{$colEsc}'");
+  return $res && mysqli_num_rows($res) > 0;
 }
 
 // --- Stats ---
@@ -24,24 +31,35 @@ $orderCount  = fetchCount($koneksi, 'orders');
 $todayOrders = fetchCount($koneksi, 'orders', "DATE(created_at) = CURDATE()");
 $unreadChats = fetchCount($koneksi, 'chat_messages', "sender_role='user' AND is_read=0");
 
-// Total revenue
-$revenueQuery = "SELECT SUM(total) as revenue FROM orders WHERE status != 'cancelled'";
+// Check schema: does `orders.status` exist? If not, be tolerant.
+$ordersHasStatus = column_exists($koneksi, 'orders', 'status');
+
+// Total revenue (ignore cancelled orders only if `status` exists)
+$revenueFilter = $ordersHasStatus ? "WHERE status != 'cancelled'" : "";
+$revenueQuery = "SELECT SUM(total) as revenue FROM orders {$revenueFilter}";
 $revenueResult = mysqli_query($koneksi, $revenueQuery);
-$totalRevenue = mysqli_fetch_assoc($revenueResult)['revenue'] ?? 0;
+$totalRevenue = (int) (mysqli_fetch_assoc($revenueResult)['revenue'] ?? 0);
 
 // --- Chart Data (Last 7 Days Orders) ---
+// --- Chart Data (Last 7 Days Orders) ---
 $chartData = [];
+$chartWhere = "created_at >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)";
+if ($ordersHasStatus) {
+  $chartWhere .= " AND status != 'cancelled'";
+}
 $chartQuery = "
-    SELECT DATE(created_at) AS dt, COUNT(*) AS cnt, SUM(total) as revenue
-    FROM orders
-    WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
-    GROUP BY DATE(created_at)
-    ORDER BY DATE(created_at) ASC
+  SELECT DATE(created_at) AS dt, COUNT(*) AS cnt, COALESCE(SUM(total),0) as revenue
+  FROM orders
+  WHERE {$chartWhere}
+  GROUP BY DATE(created_at)
+  ORDER BY DATE(created_at) ASC
 ";
 
 $chartResult = mysqli_query($koneksi, $chartQuery);
 while ($row = mysqli_fetch_assoc($chartResult)) {
-    $chartData[] = $row;
+  $row['cnt'] = isset($row['cnt']) ? (int)$row['cnt'] : 0;
+  $row['revenue'] = isset($row['revenue']) ? (int)$row['revenue'] : 0;
+  $chartData[] = $row;
 }
 
 // Get current page
@@ -326,7 +344,7 @@ $currentPage = $_GET['page'] ?? 'dashboard';
               'completed' => 'success',
               'cancelled' => 'danger'
             ];
-            $statusClass = $statusBadge[$order['status']] ?? 'secondary';
+            $statusClass = $statusBadge[$order['status'] ?? 'completed'] ?? 'secondary';
           ?>
             <tr>
               <td><span class="badge bg-secondary">#<?= str_pad($order['id'], 6, '0', STR_PAD_LEFT) ?></span></td>
@@ -463,4 +481,4 @@ new Chart(document.getElementById('salesChart'), {
 <?php include '../../components/footer.php'; ?>
 
 </body>
-</html> 
+</html>

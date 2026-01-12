@@ -18,3 +18,14 @@
 
     </div>
 </footer>
+    <?php
+    // Embed frontend session helper inline so pages don't need to compute relative paths.
+    // Prefer modular frontend script if available, otherwise fallback to assets/js/session.js
+    $modulePath = __DIR__ . '/../modules/frontend/session_client.js';
+    $sessionJsPath = __DIR__ . '/../assets/js/session.js';
+    if (file_exists($modulePath)) {
+        echo "\n<script>\n" . file_get_contents($modulePath) . "\n</script>\n";
+    } else if (file_exists($sessionJsPath)) {
+        echo "\n<script>\n" . file_get_contents($sessionJsPath) . "\n</script>\n";
+    }
+    ?>

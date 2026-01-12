@@ -173,35 +173,10 @@ if (isset($_SESSION['alert'])) {
         <p class="text-muted">Klik "Tambah Konten" untuk memulai</p>
       </div>
     </div>
-  <?php else: ?>
-    <?php while ($edu = mysqli_fetch_assoc($eduResult)): ?>
-    <div class="col-md-6 col-lg-4">
-      <div class="card h-100 shadow-sm" style="border-radius: 16px; overflow: hidden;">
-        <?php if ($edu['gambar']): ?>
-        <img src="../../../assets/img/<?= htmlspecialchars($edu['gambar']) ?>" 
-             class="card-img-top" 
-             style="height: 200px; object-fit: cover;"
-             alt="<?= htmlspecialchars($edu['judul']) ?>"
-             onerror="this.src='../../../assets/img/placeholder.jpg'">
-        <?php else: ?>
-        <div style="height: 200px; background: linear-gradient(135deg, var(--accent-bronze), var(--accent-gold)); display: flex; align-items: center; justify-content: center;">
-          <i class="fa-solid fa-book-open fa-4x" style="color: white; opacity: 0.3;"></i>
-        </div>
-        <?php endif; ?>
-        
-        <div class="card-body d-flex flex-column">
-          <h6 class="fw-bold mb-2"><?= htmlspecialchars($edu['judul']) ?></h6>
-          <p class="text-muted small flex-grow-1" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
-            <?= htmlspecialchars($edu['konten']) ?>
-          </p>
-          <small class="text-muted mb-3">
-            <i class="fa-solid fa-calendar me-1"></i>
-            <?= date('d M Y', strtotime($edu['created_at'])) ?>
-          </small>
-          <div class="d-flex gap-2">
-            <button class="btn btn-sm btn-warning flex-grow-1" onclick='showViewModal(<?= json_encode($edu, JSON_HEX_APOS | JSON_HEX_QUOT) ?>)'>
-              <i class="fa-solid fa-eye me-1"></i> Lihat
-            </button>
+  <?php
+  // Shim: forward to backend implementation
+  require_once __DIR__ . '/../../../backend/pages/admin/pages/education.php';
+  ?>
             <button class="btn btn-sm btn-danger" onclick="confirmDeleteEducation(<?= $edu['id'] ?>, '<?= htmlspecialchars(addslashes($edu['judul'])) ?>')">
               <i class="fa-solid fa-trash"></i>
             </button>

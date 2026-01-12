@@ -1,15 +1,8 @@
 <?php
-session_start();
-require_once '../../config/koneksi.php';
+require_once '../../config/session.php';
 
-// --- Auth Guard ---
-$isLoggedIn = isset($_SESSION['user_id']);
-$isAdmin = ($_SESSION['role'] ?? null) === 'admin';
-
-if (!$isLoggedIn || !$isAdmin) {
-    header('Location: ../../auth/login.php');
-    exit;
-}
+// Require admin user for this page (redirects to login if not)
+require_login('admin', '../../auth/login.php');
 
 // --- Helper: sanitize string ---
 function cleanInput(mysqli $db, string $value): string {
@@ -191,3 +184,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <?php include '../../components/footer.php'; ?>
 </body>
 </html>
+<?php
+// Backend implementation (authoritative). Do not include deprecated public shim.

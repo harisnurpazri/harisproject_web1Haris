@@ -1,10 +1,4 @@
 <?php
-session_start();
+// Shim to backend logout
+require_once __DIR__ . '/../backend/auth/logout.php';
 
-// Hapus semua data session
-session_unset();
-session_destroy();
-
-// Redirect ke halaman utama
-header('Location: ../index.php');
-exit;

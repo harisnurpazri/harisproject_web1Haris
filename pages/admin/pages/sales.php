@@ -48,51 +48,10 @@ if (isset($_GET['view'])) {
   }
 }
 
-// Update status
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
-  $orderId = (int)$_POST['order_id'];
-  $newStatus = mysqli_real_escape_string($koneksi, $_POST['status']);
-  
-  mysqli_query($koneksi, "UPDATE orders SET status = '$newStatus' WHERE id = $orderId");
-  
-  echo '<div class="alert alert-success alert-dismissible fade show">
-    <i class="fa-solid fa-check-circle me-2"></i>Status pesanan berhasil diperbarui!
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-  </div>';
-  
-  // Refresh
-  echo '<meta http-equiv="refresh" content="1;url=dashboard_admin.php?page=sales">';
-}
+<?php
+// Shim: forward to backend implementation
+require_once __DIR__ . '/../../../backend/pages/admin/pages/sales.php';
 ?>
-
-<?php if (isset($_GET['view']) && isset($order)): ?>
-<!-- Detail Order Modal Style -->
-<div class="card shadow-sm border-0 mb-4" style="border-radius: 16px;">
-  <div class="card-header" style="background: linear-gradient(135deg, var(--primary-walnut), var(--primary-teak)); color: white; border-radius: 16px 16px 0 0; padding: 1.5rem;">
-    <div class="d-flex justify-content-between align-items-center">
-      <h5 class="mb-0">
-        <i class="fa-solid fa-file-invoice me-2"></i>
-        Detail Pesanan #<?= str_pad($order['id'], 6, '0', STR_PAD_LEFT) ?>
-      </h5>
-      <a href="dashboard_admin.php?page=sales" class="btn btn-sm btn-light">
-        <i class="fa-solid fa-arrow-left me-2"></i>Kembali
-      </a>
-    </div>
-  </div>
-  
-  <div class="card-body p-4">
-    <div class="row mb-4">
-      <div class="col-md-6">
-        <h6 class="fw-bold text-muted mb-3">
-          <i class="fa-solid fa-user me-2"></i>INFORMASI PELANGGAN
-        </h6>
-        <table class="table table-borderless">
-          <tr>
-            <td width="120"><strong>Nama</strong></td>
-            <td><?= htmlspecialchars($order['nama']) ?></td>
-          </tr>
-          <tr>
-            <td><strong>Email</strong></td>
             <td><?= htmlspecialchars($order['email']) ?></td>
           </tr>
         </table>
